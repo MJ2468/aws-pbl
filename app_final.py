@@ -13,6 +13,7 @@ db_password = parameter['Parameter']['Value']
 app = Flask(__name__)
 api = Api(app)
 
+parser = reqparse.RequestParser()
 
 
 @app.route('/')
@@ -68,9 +69,9 @@ def write():
                 cursor.close()
                 db.close()
 
-            return redirect('/board')
+        return redirect('/board')
 
-@app.route('/baord/down', methods = ['get'])
+@app.route('/baord/down', methods = ['GET'])
 def download():
     board_id = request.args['id']
     db = pymysql.connect(host='database-1.c2zw45njcc7u.ap-northeast-2.rds.amazonaws.com', db='pbldb',
@@ -83,15 +84,23 @@ def download():
     db.close()
 
     print("result: ", result)
+
     if result:
         BUCKET_NAME = 's3-borard-files-mj'
-        key = result['s3-board-files']
+        key = result['s3_path']
+        file_name = result['file_name']
         file_content_type = result['mime_type']
         s3 = boto3.client('s3')
 
         print(file)
 
-        return Response(file['Body'].read(), mimetype= file_content_type, headers= )
+        return Response(file['Body'].read(), mimetype= file_content_type #, #headers={"Content-Disposition": "attachment;filename=" + file_name}
+        )
+    
+    else:
+        print("--------------------------")
+        return send_file(f'static/inf.png', mimetype='image/png')
+
 
 @app.route('/board')
 def board_list():
