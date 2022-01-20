@@ -8,7 +8,7 @@ def hell():
 
 @app.route("/hello")
 def hi():
-    name1 = "mango1"
+    name1 = "mango"
     return render_template('hello.html', name = name1)  # http://172.20.40.79:8080 이 뒤에 /hello 를 적어줘야 열림
 
 @app.route('/test')
